@@ -1,0 +1,25 @@
+# Login
+
+> ## Caso de sucesso
+
+⛔️ Pendente  ✅ Finalizada
+
+1. ⛔️ Recebe uma requisição do tipo **POST** na rota **/api/login**
+2. ⛔️ Valida dados obrigatórios **email** e **password**
+3. ⛔️ Valida que o campo **email** é um e-mail válido
+4. ⛔️ **Busca** o usuário com o email e senha fornecidos
+5. ⛔️ Gera um **token** de acesso a partir do email do usuário e as permissões de acesso
+6. ⛔️ Gerar um refresh token
+7. ⛔️ O token deve ter expiração em 15 minutos
+8. ⛔️ O refresh token deve ter expiração de 12 horas
+6. ⛔️ **Atualiza** os dados do usuário com o token de acesso gerado
+7. ⛔️ Retorna **200** com o token, o refresh token de acesso e o nome do usuário e  as permissões de acesso
+
+> ## Exceções
+
+1. ⛔️ Retorna erro **404** se a API não existir
+2. ⛔️ Retorna erro **400** se email ou password não forem fornecidos pelo client
+3. ⛔️ Retorna erro **400** se o campo email for um e-mail inválido
+4. ⛔️ Retorna erro **401** se não encontrar um usuário com os dados fornecidos
+5. ⛔️ Retorna erro **500** se der erro ao tentar gerar o token de acesso
+6. ⛔️ Retorna erro **500** se der erro ao tentar atualizar o usuário com o token de acesso gerado
