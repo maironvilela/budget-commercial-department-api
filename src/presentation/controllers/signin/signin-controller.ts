@@ -1,6 +1,9 @@
-import { Validation } from '../../../validators';
-import { badRequest } from '../../helpers/http-helpers';
-import { HttpRequest, HttpResponse } from './signin-controller-protocols';
+import {
+  HttpRequest,
+  HttpResponse,
+  Validation,
+  badRequest,
+} from '@/presentation';
 
 export class SignInController {
   constructor(private readonly validation: Validation) {}

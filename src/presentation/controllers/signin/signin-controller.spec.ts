@@ -1,7 +1,6 @@
 import { faker } from '@faker-js/faker';
-import { Validation } from '../../../validators';
 
-import { HttpRequest, SignInController } from './signin-controller-protocols';
+import { HttpRequest, SignInController, Validation } from '@/presentation';
 
 interface sutTypes {
   sut: SignInController;
