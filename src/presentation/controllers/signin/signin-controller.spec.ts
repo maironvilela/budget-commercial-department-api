@@ -17,6 +17,13 @@ const makeValidationStub = (): Validation => {
   return new ValidationStub();
 };
 
+const makeHttpRequestFake = (): HttpRequest => ({
+  body: {
+    username: faker.internet.userName(),
+    password: faker.internet.password(),
+  },
+});
+
 const makeSut = (): sutTypes => {
   const validationStub = makeValidationStub();
   const sut = new SignInController(validationStub);
@@ -24,6 +31,17 @@ const makeSut = (): sutTypes => {
 };
 
 describe('SignInController', () => {
+  it('Should call validate function to validate the fields', async () => {
+    const { sut, validationStub } = makeSut();
+
+    const httpRequestFake = makeHttpRequestFake();
+
+    const validateSpy = jest.spyOn(validationStub, 'validate');
+
+    await sut.handle(httpRequestFake);
+
+    expect(validateSpy).toBeCalledWith(httpRequestFake.body);
+  });
   it('Should return badRequest if username not provided', async () => {
     const { sut, validationStub } = makeSut();
     const httpRequestFake: HttpRequest = {
