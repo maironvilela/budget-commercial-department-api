@@ -4,6 +4,7 @@ import {
   badRequest,
   Validation,
   serverError,
+  ok,
 } from '@/presentation';
 import { Authentication } from '@/domain';
 
@@ -18,17 +19,11 @@ export class SignInController {
       const { email, password } = request.body;
 
       const error = this.validation.validate(request.body);
-
       if (error) {
         return badRequest(error);
       }
-
       const auth = await this.authentication.auth({ email, password });
-
-      return {
-        body: auth,
-        statusCode: 200,
-      };
+      return ok(auth);
     } catch (error) {
       return serverError(error);
     }

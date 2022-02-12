@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
 
+import { Authentication, AuthProps, AuthResponse } from '@/domain';
 import {
   badRequest,
   HttpRequest,
@@ -9,14 +10,20 @@ import {
   Validation,
   serverError,
   ServerError,
+  ok,
 } from '@/presentation';
-import { Authentication, AuthProps, AuthResponse } from '@/domain';
 
 interface sutTypes {
   sut: SignInController;
   validationStub: Validation;
   authenticationStub: Authentication;
 }
+const makeSut = (): sutTypes => {
+  const authenticationStub = makeAuthenticationStub();
+  const validationStub = makeValidationStub();
+  const sut = new SignInController(validationStub, authenticationStub);
+  return { sut, validationStub, authenticationStub };
+};
 
 const makeAuthenticationStub = (): Authentication => {
   class AuthenticationStub implements Authentication {
@@ -25,7 +32,6 @@ const makeAuthenticationStub = (): Authentication => {
       return await new Promise(resolve => resolve(auth));
     }
   }
-
   return new AuthenticationStub();
 };
 
@@ -44,13 +50,6 @@ const makeHttpRequestFake = (): HttpRequest => ({
     password: faker.internet.password(),
   },
 });
-
-const makeSut = (): sutTypes => {
-  const authenticationStub = makeAuthenticationStub();
-  const validationStub = makeValidationStub();
-  const sut = new SignInController(validationStub, authenticationStub);
-  return { sut, validationStub, authenticationStub };
-};
 
 describe('SignInController', () => {
   it('Should call validate function with correct params', async () => {
@@ -125,40 +124,36 @@ describe('SignInController', () => {
 
     expect(spyAuth).toHaveBeenCalledWith(httpRequestFake.body);
   });
-  it('Should return SigninController statusCode 500, token and refreshToken in case success', async () => {
+  it('Should return SigninController statusCode 200, token and refreshToken in case success', async () => {
     const { sut } = makeSut();
-
     const response = await sut.handle(makeHttpRequestFake());
     expect(response.statusCode).toEqual(200);
-    expect(response.body).toEqual({
-      token: 'any_token',
-      refreshToken: 'any_refresh_token',
-    });
+    expect(response).toEqual(
+      ok({ token: 'any_token', refreshToken: 'any_refresh_token' }),
+    );
   });
-
   it('Should SigninController return ServerError if validate function fail', async () => {
     const { sut, validationStub } = makeSut();
 
     jest.spyOn(validationStub, 'validate').mockImplementationOnce(() => {
-      throw new ServerError('Server Error');
+      throw new ServerError('any_stack');
     });
 
     const response = await sut.handle(makeHttpRequestFake());
 
     expect(response.statusCode).toEqual(500);
-    expect(response).toEqual(serverError(new ServerError('Server Error')));
+    expect(response).toEqual(serverError(new ServerError('any_stack')));
   });
-
   it('Should SigninController return ServerError if Authentication function fail', async () => {
     const { sut, authenticationStub } = makeSut();
 
     jest.spyOn(authenticationStub, 'auth').mockImplementationOnce(() => {
-      throw new ServerError('Server Error');
+      throw new ServerError('any_stack');
     });
 
     const response = await sut.handle(makeHttpRequestFake());
 
     expect(response.statusCode).toEqual(500);
-    expect(response).toEqual(serverError(new ServerError('Server Error')));
+    expect(response).toEqual(serverError(new ServerError('any_stack')));
   });
 });
