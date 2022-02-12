@@ -7,6 +7,8 @@ import {
   SignInController,
   InvalidParamError,
   Validation,
+  serverError,
+  ServerError,
 } from '@/presentation';
 import { Authentication, AuthProps, AuthResponse } from '@/domain';
 
@@ -123,7 +125,7 @@ describe('SignInController', () => {
 
     expect(spyAuth).toHaveBeenCalledWith(httpRequestFake.body);
   });
-  it('Should return statusCode 200, token and refreshToken in case success', async () => {
+  it('Should return SigninController statusCode 500, token and refreshToken in case success', async () => {
     const { sut } = makeSut();
 
     const response = await sut.handle(makeHttpRequestFake());
@@ -132,5 +134,17 @@ describe('SignInController', () => {
       token: 'any_token',
       refreshToken: 'any_refresh_token',
     });
+  });
+  it('Should SigninController return ServerError if Authentication function fail', async () => {
+    const { sut, validationStub } = makeSut();
+
+    jest.spyOn(validationStub, 'validate').mockImplementationOnce(() => {
+      throw new ServerError('Server Error');
+    });
+
+    const response = await sut.handle(makeHttpRequestFake());
+
+    expect(response.statusCode).toEqual(500);
+    expect(response).toEqual(serverError(new ServerError('Server Error')));
   });
 });

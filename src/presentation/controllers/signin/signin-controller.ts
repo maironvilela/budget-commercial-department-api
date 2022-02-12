@@ -3,6 +3,7 @@ import {
   HttpResponse,
   badRequest,
   Validation,
+  serverError,
 } from '@/presentation';
 import { Authentication } from '@/domain';
 
@@ -13,19 +14,23 @@ export class SignInController {
   ) {}
 
   async handle(request: HttpRequest): Promise<HttpResponse> {
-    const { email, password } = request.body;
+    try {
+      const { email, password } = request.body;
 
-    const error = this.validation.validate(request.body);
+      const error = this.validation.validate(request.body);
 
-    if (error) {
-      return badRequest(error);
+      if (error) {
+        return badRequest(error);
+      }
+
+      const auth = await this.authentication.auth({ email, password });
+
+      return {
+        body: auth,
+        statusCode: 200,
+      };
+    } catch (error) {
+      return serverError(error);
     }
-
-    const auth = await this.authentication.auth({ email, password });
-
-    return {
-      body: auth,
-      statusCode: 200,
-    };
   }
 }
