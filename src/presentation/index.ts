@@ -1,7 +1,7 @@
-export * from '@/presentation/protocols/http-request';
-export * from '@/presentation/protocols/http-response';
-export * from '@/presentation/controllers/signin/signin-controller';
-export * from '@/presentation/helpers/http-helpers';
-export * from '@/presentation/errors';
+export * from './controllers/signin/signin-controller';
+export * from './errors';
+export * from './helpers/http-helpers';
+export * from './protocols/http-request';
+export * from './protocols/http-response';
 
 export * from '@/validators';
