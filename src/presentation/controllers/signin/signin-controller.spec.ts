@@ -135,10 +135,24 @@ describe('SignInController', () => {
       refreshToken: 'any_refresh_token',
     });
   });
-  it('Should SigninController return ServerError if Authentication function fail', async () => {
+
+  it('Should SigninController return ServerError if validate function fail', async () => {
     const { sut, validationStub } = makeSut();
 
     jest.spyOn(validationStub, 'validate').mockImplementationOnce(() => {
+      throw new ServerError('Server Error');
+    });
+
+    const response = await sut.handle(makeHttpRequestFake());
+
+    expect(response.statusCode).toEqual(500);
+    expect(response).toEqual(serverError(new ServerError('Server Error')));
+  });
+
+  it('Should SigninController return ServerError if Authentication function fail', async () => {
+    const { sut, authenticationStub } = makeSut();
+
+    jest.spyOn(authenticationStub, 'auth').mockImplementationOnce(() => {
       throw new ServerError('Server Error');
     });
 
