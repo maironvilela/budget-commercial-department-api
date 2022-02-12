@@ -1,20 +1,18 @@
 import {
   HttpRequest,
   HttpResponse,
-  Validation,
   badRequest,
+  Validation,
 } from '@/presentation';
 
 export class SignInController {
   constructor(private readonly validation: Validation) {}
 
   async handle(request: HttpRequest): Promise<HttpResponse> {
-    const inputs = request.body;
-
-    const error = this.validation.validate(inputs);
+    const error = this.validation.validate(request.body);
 
     if (error) {
-      return badRequest(new Error());
+      return badRequest(error);
     }
 
     return {

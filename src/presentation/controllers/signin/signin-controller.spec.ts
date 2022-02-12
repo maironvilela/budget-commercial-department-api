@@ -1,6 +1,13 @@
 import { faker } from '@faker-js/faker';
 
-import { HttpRequest, SignInController, Validation } from '@/presentation';
+import {
+  badRequest,
+  HttpRequest,
+  MissingParamError,
+  SignInController,
+  InvalidParamError,
+  Validation,
+} from '@/presentation';
 
 interface sutTypes {
   sut: SignInController;
@@ -41,17 +48,55 @@ describe('SignInController', () => {
 
     expect(validateSpy).toBeCalledWith(httpRequestFake.body);
   });
-  it('Should return badRequest if username not provided', async () => {
+  it('Should return badRequest with MissingParamError if username not provided', async () => {
     const { sut, validationStub } = makeSut();
     const httpRequestFake: HttpRequest = {
       body: {
         password: faker.internet.password(),
       },
     };
+    jest
+      .spyOn(validationStub, 'validate')
+      .mockReturnValue(new MissingParamError('email'));
 
-    jest.spyOn(validationStub, 'validate').mockReturnValue(new Error());
+    const response = await sut.handle(httpRequestFake);
+
+    expect(response.statusCode).toBe(400);
+    expect(response).toEqual(badRequest(new MissingParamError('email')));
+  });
+  it('Should return badRequest with MissingParamError if password not provided', async () => {
+    const { sut, validationStub } = makeSut();
+    const httpRequestFake: HttpRequest = {
+      body: {
+        username: faker.internet.userName(),
+      },
+    };
+
+    jest
+      .spyOn(validationStub, 'validate')
+      .mockReturnValue(new MissingParamError('password'));
 
     const response = await sut.handle(httpRequestFake);
     expect(response.statusCode).toBe(400);
+    expect(response).toEqual(badRequest(new MissingParamError('password')));
+  });
+  it('Should return badRequest with InvalidParamError if email provided is invalid', async () => {
+    const { sut, validationStub } = makeSut();
+
+    const httpRequestFake: HttpRequest = {
+      body: {
+        username: 'invalid_email',
+        password: faker.internet.password(),
+      },
+    };
+
+    jest
+      .spyOn(validationStub, 'validate')
+      .mockReturnValue(new InvalidParamError('email'));
+
+    const response = await sut.handle(httpRequestFake);
+
+    expect(response.statusCode).toEqual(400);
+    expect(response).toEqual(badRequest(new InvalidParamError('email')));
   });
 });
