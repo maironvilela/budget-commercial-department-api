@@ -8,11 +8,27 @@ import {
   InvalidParamError,
   Validation,
 } from '@/presentation';
+import { Authentication, AuthProps, AuthResponse } from '@/domain';
 
 interface sutTypes {
   sut: SignInController;
   validationStub: Validation;
+  authenticationStub: Authentication;
 }
+
+const makeAuthenticationStub = (): Authentication => {
+  class AuthenticationStub implements Authentication {
+    async auth({ email, password }: AuthProps): Promise<AuthResponse> {
+      const auth = {
+        token: faker.datatype.uuid(),
+        refreshToken: faker.datatype.uuid(),
+      };
+      return await new Promise(resolve => resolve(auth));
+    }
+  }
+
+  return new AuthenticationStub();
+};
 
 const makeValidationStub = (): Validation => {
   class ValidationStub implements Validation {
@@ -25,19 +41,20 @@ const makeValidationStub = (): Validation => {
 
 const makeHttpRequestFake = (): HttpRequest => ({
   body: {
-    username: faker.internet.userName(),
+    email: faker.internet.email(),
     password: faker.internet.password(),
   },
 });
 
 const makeSut = (): sutTypes => {
+  const authenticationStub = makeAuthenticationStub();
   const validationStub = makeValidationStub();
-  const sut = new SignInController(validationStub);
-  return { sut, validationStub };
+  const sut = new SignInController(validationStub, authenticationStub);
+  return { sut, validationStub, authenticationStub };
 };
 
 describe('SignInController', () => {
-  it('Should call validate function to validate the fields', async () => {
+  it('Should call validate function with correct params', async () => {
     const { sut, validationStub } = makeSut();
 
     const httpRequestFake = makeHttpRequestFake();
@@ -48,7 +65,7 @@ describe('SignInController', () => {
 
     expect(validateSpy).toBeCalledWith(httpRequestFake.body);
   });
-  it('Should return badRequest with MissingParamError if username not provided', async () => {
+  it('Should return badRequest with MissingParamError if email not provided', async () => {
     const { sut, validationStub } = makeSut();
     const httpRequestFake: HttpRequest = {
       body: {
@@ -68,7 +85,7 @@ describe('SignInController', () => {
     const { sut, validationStub } = makeSut();
     const httpRequestFake: HttpRequest = {
       body: {
-        username: faker.internet.userName(),
+        email: faker.internet.email(),
       },
     };
 
@@ -85,7 +102,7 @@ describe('SignInController', () => {
 
     const httpRequestFake: HttpRequest = {
       body: {
-        username: 'invalid_email',
+        email: 'invalid_email',
         password: faker.internet.password(),
       },
     };
@@ -98,5 +115,15 @@ describe('SignInController', () => {
 
     expect(response.statusCode).toEqual(400);
     expect(response).toEqual(badRequest(new InvalidParamError('email')));
+  });
+  it('Should call authentication function with correct params ', async () => {
+    const { sut, authenticationStub } = makeSut();
+
+    const spyAuth = jest.spyOn(authenticationStub, 'auth');
+
+    const httpRequestFake = makeHttpRequestFake();
+    await sut.handle(httpRequestFake);
+
+    expect(spyAuth).toHaveBeenCalledWith(httpRequestFake.body);
   });
 });
