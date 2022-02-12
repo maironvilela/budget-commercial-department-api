@@ -19,10 +19,7 @@ interface sutTypes {
 const makeAuthenticationStub = (): Authentication => {
   class AuthenticationStub implements Authentication {
     async auth({ email, password }: AuthProps): Promise<AuthResponse> {
-      const auth = {
-        token: faker.datatype.uuid(),
-        refreshToken: faker.datatype.uuid(),
-      };
+      const auth = { token: 'any_token', refreshToken: 'any_refresh_token' };
       return await new Promise(resolve => resolve(auth));
     }
   }
@@ -125,5 +122,15 @@ describe('SignInController', () => {
     await sut.handle(httpRequestFake);
 
     expect(spyAuth).toHaveBeenCalledWith(httpRequestFake.body);
+  });
+  it('Should return statusCode 200, token and refreshToken in case success', async () => {
+    const { sut } = makeSut();
+
+    const response = await sut.handle(makeHttpRequestFake());
+    expect(response.statusCode).toEqual(200);
+    expect(response.body).toEqual({
+      token: 'any_token',
+      refreshToken: 'any_refresh_token',
+    });
   });
 });

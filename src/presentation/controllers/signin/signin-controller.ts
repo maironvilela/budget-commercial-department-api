@@ -21,9 +21,10 @@ export class SignInController {
       return badRequest(error);
     }
 
-    await this.authentication.auth({ email, password });
+    const auth = await this.authentication.auth({ email, password });
 
     return {
+      body: auth,
       statusCode: 200,
     };
   }
