@@ -1,5 +1,3 @@
-import { faker } from '@faker-js/faker';
-
 import { Authentication, AuthProps, AuthResponse } from '@/domain';
 import {
   badRequest,
@@ -12,6 +10,7 @@ import {
   ServerError,
   ok,
 } from '@/presentation';
+import { faker } from '@faker-js/faker';
 
 interface sutTypes {
   sut: SignInController;

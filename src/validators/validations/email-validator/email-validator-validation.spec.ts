@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
+import { InvalidParamError } from '@/presentation';
+import { EmailValidation } from '@/validators';
 import { faker } from '@faker-js/faker';
 
-import { EmailValidation } from '@/validators';
 import { EmailValidatorValidation } from '.';
-import { InvalidParamError } from '@/presentation';
 
 interface SutTypes {
   sut: EmailValidatorValidation;
