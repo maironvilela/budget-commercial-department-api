@@ -116,6 +116,16 @@ describe('DbAuthentication', () => {
 
     expect(authResult).toBeNull();
   });
+  test('Should throw if loadAccountByEmailRepository fail', async () => {
+    const { sut, loadAccountByEmailRepositoryStub } = makeSut();
+    jest
+      .spyOn(loadAccountByEmailRepositoryStub, 'loadByEmail')
+      .mockImplementationOnce(() => {
+        throw new Error();
+      });
+    const promise = sut.auth(makeAuthPropsFake());
+    await expect(promise).rejects.toThrow();
+  });
   it('Should call compare function with correct params ', async () => {
     const { sut, hashCompareStub, loadAccountByEmailRepositoryStub } =
       makeSut();
