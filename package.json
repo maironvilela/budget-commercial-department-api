@@ -12,6 +12,7 @@
     "@babel/preset-env": "^7.16.11",
     "@babel/preset-typescript": "^7.16.7",
     "@faker-js/faker": "^6.0.0-alpha.5",
+    "@types/bcrypt": "^5.0.0",
     "@types/faker": "^6.6.9",
     "@types/jest": "^27.4.0",
     "@types/node": "^17.0.16",
@@ -44,6 +45,7 @@
     "build": "rimraf dist && babel src --extensions \".js,.ts\" --out-dir dist --copy-files --no-copy-ignored"
   },
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "email-validator": "^2.0.4",
     "validator": "^13.7.0"
   }
