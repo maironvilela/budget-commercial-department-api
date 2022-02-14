@@ -156,6 +156,15 @@ describe('DbAuthentication', () => {
 
     expect(authResult).toBeNull();
   });
+
+  it('Should throw if compare function fail', async () => {
+    const { sut, hashCompareStub } = makeSut();
+    jest.spyOn(hashCompareStub, 'compare').mockImplementationOnce(() => {
+      throw new Error();
+    });
+    const promise = sut.auth(makeAuthPropsFake());
+    await expect(promise).rejects.toThrow();
+  });
   it('Should call createAuth with correct params', async () => {
     const { sut, createAuthStub, loadAccountByEmailRepositoryStub } = makeSut();
 
@@ -176,7 +185,6 @@ describe('DbAuthentication', () => {
       roles: [accountModelFake.roles],
     });
   });
-
   it('Should return token and refreshToken in case success', async () => {
     const { sut } = makeSut();
 
