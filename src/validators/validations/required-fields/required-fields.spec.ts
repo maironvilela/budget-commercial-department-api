@@ -1,5 +1,6 @@
-import { MissingParamError } from '@/presentation';
 import { faker } from '@faker-js/faker';
+
+import { MissingParamError } from '@/presentation';
 
 import { RequiredFieldsValidations } from '.';
 

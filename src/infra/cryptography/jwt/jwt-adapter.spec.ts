@@ -2,7 +2,16 @@ import { faker } from '@faker-js/faker';
 import jwt from 'jsonwebtoken';
 
 import auth from '@/config/auth';
+import { CreateAuthResult } from '@/data';
 import { JWTAdapter } from '@/infra';
+
+jest.mock('jsonwebtoken', () => ({
+  async sign(): Promise<CreateAuthResult> {
+    return await new Promise(resolve =>
+      resolve({ token: 'any_token', refreshToken: 'any_refresh_token' }),
+    );
+  },
+}));
 
 const makeSut = (): JWTAdapter => {
   return new JWTAdapter();

@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
+import { faker } from '@faker-js/faker';
+
 import { InvalidParamError } from '@/presentation';
 import { EmailValidation } from '@/validators';
-import { faker } from '@faker-js/faker';
 
 import { EmailValidatorValidation } from '.';
 

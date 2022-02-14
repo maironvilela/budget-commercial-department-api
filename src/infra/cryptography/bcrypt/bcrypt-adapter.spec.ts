@@ -1,5 +1,6 @@
-import { BcryptAdapter } from '@/infra';
 import bcrypt from 'bcrypt';
+
+import { BcryptAdapter } from '@/infra';
 
 const makeSut = (): BcryptAdapter => {
   return new BcryptAdapter(12);

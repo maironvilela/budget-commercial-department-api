@@ -1,3 +1,5 @@
+import { faker } from '@faker-js/faker';
+
 import {
   CreateAuth,
   HashCompare,
@@ -6,7 +8,6 @@ import {
   LoadAccountByEmailRepository,
 } from '@/data';
 import { AccountModel, AuthProps } from '@/domain';
-import { faker } from '@faker-js/faker';
 
 import { DbAuthentication } from './db-authentication';
 

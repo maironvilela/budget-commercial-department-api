@@ -1,5 +1,6 @@
-import { HashCompare } from '@/data';
 import bcrypt from 'bcrypt';
+
+import { HashCompare } from '@/data';
 
 export class BcryptAdapter implements HashCompare {
   constructor(private readonly salt: number) {}
