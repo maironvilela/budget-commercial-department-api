@@ -1,12 +1,9 @@
 // refatorar
+import { LoadAccountByEmailRepository } from '@/data/protocols/load-account-by-email-repository';
 import { AuthProps } from '@/domain';
 import { faker } from '@faker-js/faker';
 
 import { DbAuthentication } from './db-authentication';
-
-export interface LoadAccountByEmailRepository {
-  loadByEmail: (email: string) => void;
-}
 
 type SutTypes = {
   sut: DbAuthentication;
@@ -37,7 +34,7 @@ const makeAuthPropsFake = (): AuthProps => ({
 });
 
 describe('DbAuthentication', () => {
-  it('Should call findByEmail function with email correct', async () => {
+  it('Should call findByEmail function with correct email ', async () => {
     const { sut, loadAccountByEmailRepositoryStub } = makeSut();
 
     const authPropsFake = makeAuthPropsFake();

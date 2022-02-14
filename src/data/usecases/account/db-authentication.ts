@@ -1,8 +1,7 @@
 // Refatorar
 
+import { LoadAccountByEmailRepository } from '@/data';
 import { Authentication, AuthProps, AuthResponse } from '@/domain';
-
-import { LoadAccountByEmailRepository } from './db-authentication.spec';
 
 export class DbAuthentication implements Authentication {
   constructor(
