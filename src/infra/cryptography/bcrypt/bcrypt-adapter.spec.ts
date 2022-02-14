@@ -17,5 +17,16 @@ describe('BcryptAdapter', () => {
 
       expect(result).toEqual(true);
     });
+
+    it('Should return false if valid password provided', async () => {
+      const sut = makeSut();
+
+      const textPlain = '123';
+      const hash = await bcrypt.hash('invalid_text_plain', 12);
+
+      const result = await sut.compare(textPlain, hash);
+
+      expect(result).toEqual(false);
+    });
   });
 });
