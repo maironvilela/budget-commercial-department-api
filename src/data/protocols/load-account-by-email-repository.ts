@@ -1,3 +1,5 @@
+import { AccountModel } from '@/domain';
+
 export interface LoadAccountByEmailRepository {
-  loadByEmail: (email: string) => void;
+  loadByEmail: (email: string) => AccountModel;
 }

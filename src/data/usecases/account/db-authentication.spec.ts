@@ -1,20 +1,29 @@
 // refatorar
 import { LoadAccountByEmailRepository } from '@/data/protocols/load-account-by-email-repository';
-import { AuthProps } from '@/domain';
+import { AccountModel, AuthProps } from '@/domain';
 import { faker } from '@faker-js/faker';
 
 import { DbAuthentication } from './db-authentication';
 
+export interface HashCompare {
+  compare: (textPlain: string, hash: string) => void;
+}
+
 type SutTypes = {
   sut: DbAuthentication;
   loadAccountByEmailRepositoryStub: LoadAccountByEmailRepository;
+  hashCompareStub: HashCompare;
 };
 
 const makeSut = (): SutTypes => {
+  const hashCompareStub = makeHashCompareStub();
   const loadAccountByEmailRepositoryStub =
     makeLoadAccountByEmailRepositoryStub();
-  const sut = new DbAuthentication(loadAccountByEmailRepositoryStub);
-  return { sut, loadAccountByEmailRepositoryStub };
+  const sut = new DbAuthentication(
+    loadAccountByEmailRepositoryStub,
+    hashCompareStub,
+  );
+  return { sut, loadAccountByEmailRepositoryStub, hashCompareStub };
 };
 
 const makeLoadAccountByEmailRepositoryStub =
@@ -22,15 +31,34 @@ const makeLoadAccountByEmailRepositoryStub =
     class LoadAccountByEmailRepositoryStub
       implements LoadAccountByEmailRepository
     {
-      loadByEmail(email: string): void {}
+      loadByEmail(email: string): AccountModel {
+        const account = makeReturnAccountModelFaker();
+        return account;
+      }
     }
 
     return new LoadAccountByEmailRepositoryStub();
   };
 
+const makeHashCompareStub = (): HashCompare => {
+  class HashCompareStub implements HashCompare {
+    compare(textPlain: string, hash: string): void {}
+  }
+
+  return new HashCompareStub();
+};
+
 const makeAuthPropsFake = (): AuthProps => ({
   email: faker.internet.email(),
   password: faker.internet.password(),
+});
+const makeReturnAccountModelFaker = (): AccountModel => ({
+  id: faker.datatype.uuid(),
+  name: faker.name.findName(),
+  email: faker.internet.email(),
+  password: faker.internet.password(),
+  roles: faker.name.jobType(),
+  refreshToken: faker.datatype.uuid(),
 });
 
 describe('DbAuthentication', () => {
@@ -56,15 +84,37 @@ describe('DbAuthentication', () => {
 
     expect(authResult).toBeNull();
   });
+
+  it('Should call compare function with correct params ', async () => {
+    const { sut, hashCompareStub, loadAccountByEmailRepositoryStub } =
+      makeSut();
+
+    const authPropsFake = makeAuthPropsFake();
+    const authResultFake = makeReturnAccountModelFaker();
+
+    jest
+      .spyOn(loadAccountByEmailRepositoryStub, 'loadByEmail')
+      .mockReturnValue(authResultFake);
+
+    const loadByEmailSpy = jest.spyOn(hashCompareStub, 'compare');
+
+    await sut.auth(authPropsFake);
+
+    expect(loadByEmailSpy).toHaveBeenCalledWith(
+      authPropsFake.password,
+      authResultFake.password,
+    );
+  });
 });
 
 /*
   [x] Buscar o usuário utilizando email
-  [ ] se usuário nao for encontrado, retornar null,
-  [ ] validar a senha retornado no usuário da consulta com a senha recebida como parametro
+  [x] se usuário nao for encontrado, retornar null,
+  [] Comparar password
+  [] retornar null se a senha retornado no usuário da consulta é diferente da senha recebida como parâmetro
   [ ] if as senhas forem diferente, retornar null
   [ ] Criar o token com o email do usuário e as permissões
   [ ] Criar um refresh token com o id do usuário
-  [ ] retorna o token,o refresh token e o nome do usuario
+  [ ] retorna o token,o refresh token e o nome do usuário
 
 */
