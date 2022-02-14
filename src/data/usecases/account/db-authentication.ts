@@ -18,11 +18,12 @@ export class DbAuthentication implements Authentication {
       );
 
       if (isValidPassword) {
-        await this.createAuth.create({
+        const auth = await this.createAuth.create({
           id: account.id,
           email: account.email,
           roles: [account.roles],
         });
+        return Object.assign(auth, { name: account.name });
       }
     }
 

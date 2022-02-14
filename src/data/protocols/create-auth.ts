@@ -5,7 +5,6 @@ export type CreateAuthProps = {
 };
 
 export type CreateAuthResult = {
-  name: string;
   token: string;
   refreshToken: string;
 };

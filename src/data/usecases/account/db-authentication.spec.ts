@@ -38,11 +38,10 @@ const makeSut = (): SutTypes => {
 const makeCreateAuth = (): CreateAuth => {
   class CreateAuthStub implements CreateAuth {
     async create(data: CreateAuthProps): Promise<CreateAuthResult> {
-      const authResult = makeCreateAuthResultFake();
+      const authResult = authResultFake;
       return await new Promise(resolve => resolve(authResult));
     }
   }
-
   return new CreateAuthStub();
 };
 
@@ -52,7 +51,7 @@ const makeLoadAccountByEmailRepositoryStub =
       implements LoadAccountByEmailRepository
     {
       async loadByEmail(email: string): Promise<AccountModel> {
-        const account = makeAccountModelResultFaker();
+        const account = accountModelResultFaker;
         return await new Promise(resolve => resolve(account));
       }
     }
@@ -84,10 +83,12 @@ const makeAccountModelResultFaker = (): AccountModel => ({
   refreshToken: faker.datatype.uuid(),
 });
 const makeCreateAuthResultFake = (): CreateAuthResult => ({
-  name: faker.name.findName(),
   token: faker.datatype.uuid(),
   refreshToken: faker.datatype.uuid(),
 });
+
+const authResultFake = makeCreateAuthResultFake();
+const accountModelResultFaker = makeAccountModelResultFaker();
 
 describe('DbAuthentication', () => {
   it('Should call findByEmail function with correct email ', async () => {
@@ -105,7 +106,11 @@ describe('DbAuthentication', () => {
     expect(loadByEmailSpy).toHaveBeenCalledWith(authPropsFake.email);
   });
   it('Should return null if findByEmail function does not find the account with the email provided', async () => {
-    const { sut } = makeSut();
+    const { sut, loadAccountByEmailRepositoryStub } = makeSut();
+
+    jest
+      .spyOn(loadAccountByEmailRepositoryStub, 'loadByEmail')
+      .mockReturnValueOnce(null);
 
     const authResult = await sut.auth(makeAuthPropsFake());
 
@@ -132,14 +137,16 @@ describe('DbAuthentication', () => {
     );
   });
   it('Should return null if compare function is called with invalid password', async () => {
-    const { sut } = makeSut();
+    const { sut, loadAccountByEmailRepositoryStub } = makeSut();
+    jest
+      .spyOn(loadAccountByEmailRepositoryStub, 'loadByEmail')
+      .mockReturnValueOnce(null);
 
     const authResult = await sut.auth(makeAuthPropsFake());
 
     expect(authResult).toBeNull();
   });
   it('Should call createAuth with correct params', async () => {
-    console.log('### ###');
     const { sut, createAuthStub, loadAccountByEmailRepositoryStub } = makeSut();
 
     const authPropsFake = makeAuthPropsFake();
@@ -159,16 +166,15 @@ describe('DbAuthentication', () => {
       roles: [accountModelFake.roles],
     });
   });
+
+  it('Should return token and refreshToken in case success', async () => {
+    const { sut } = makeSut();
+
+    const auth = await sut.auth(makeAuthPropsFake());
+
+    expect(auth).toEqual({
+      ...authResultFake,
+      name: accountModelResultFaker.name,
+    });
+  });
 });
-
-/*
-  [x] Buscar o usuário utilizando email
-  [x] se usuário nao for encontrado, retornar null,
-  [x] Comparar password
-  [x] retornar null se a senha retornado no usuário da consulta é diferente da senha recebida como parâmetro
-  [ x] if as senhas forem diferente, retornar null
-  [ ] Criar o token com o email do usuário e as permissões
-  [ ] Criar um refresh token com o id do usuário
-  [ ] retorna o token,o refresh token e o nome do usuário
-
-*/
