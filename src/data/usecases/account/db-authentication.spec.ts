@@ -1,4 +1,3 @@
-// refatorar
 import { HashCompare } from '@/data';
 import { LoadAccountByEmailRepository } from '@/data/protocols/load-account-by-email-repository';
 import { AccountModel, AuthProps } from '@/domain';
@@ -101,6 +100,13 @@ describe('DbAuthentication', () => {
       authPropsFake.password,
       authResultFake.password,
     );
+  });
+  it('Should return null if compare function is called with invalid password', async () => {
+    const { sut } = makeSut();
+
+    const authResult = await sut.auth(makeAuthPropsFake());
+
+    expect(authResult).toBeNull();
   });
 });
 
