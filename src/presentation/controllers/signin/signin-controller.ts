@@ -1,4 +1,6 @@
+import { Authentication } from '@/domain';
 import {
+  Controller,
   HttpRequest,
   HttpResponse,
   badRequest,
@@ -6,9 +8,8 @@ import {
   serverError,
   ok,
 } from '@/presentation';
-import { Authentication } from '@/domain';
 
-export class SignInController {
+export class SignInController implements Controller {
   constructor(
     private readonly validation: Validation,
     private readonly authentication: Authentication,

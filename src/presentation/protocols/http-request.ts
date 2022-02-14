@@ -1,3 +1,3 @@
-export interface HttpRequest {
+export type HttpRequest = {
   body?: any;
-}
+};
