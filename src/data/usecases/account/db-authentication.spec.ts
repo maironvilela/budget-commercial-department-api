@@ -147,16 +147,13 @@ describe('DbAuthentication', () => {
     );
   });
   it('Should return null if compare function is called with invalid password', async () => {
-    const { sut, loadAccountByEmailRepositoryStub } = makeSut();
-    jest
-      .spyOn(loadAccountByEmailRepositoryStub, 'loadByEmail')
-      .mockReturnValueOnce(null);
+    const { sut, hashCompareStub } = makeSut();
+    jest.spyOn(hashCompareStub, 'compare').mockReturnValueOnce(null);
 
     const authResult = await sut.auth(makeAuthPropsFake());
 
     expect(authResult).toBeNull();
   });
-
   it('Should throw if compare function fail', async () => {
     const { sut, hashCompareStub } = makeSut();
     jest.spyOn(hashCompareStub, 'compare').mockImplementationOnce(() => {
@@ -184,6 +181,14 @@ describe('DbAuthentication', () => {
       email: accountModelFake.email,
       roles: [accountModelFake.roles],
     });
+  });
+  it('Should throw if createAuth fail', async () => {
+    const { sut, createAuthStub } = makeSut();
+    jest.spyOn(createAuthStub, 'create').mockImplementationOnce(() => {
+      throw new Error();
+    });
+    const promise = sut.auth(makeAuthPropsFake());
+    await expect(promise).rejects.toThrow();
   });
   it('Should return token and refreshToken in case success', async () => {
     const { sut } = makeSut();
