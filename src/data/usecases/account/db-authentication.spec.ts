@@ -1,13 +1,10 @@
 // refatorar
+import { HashCompare } from '@/data';
 import { LoadAccountByEmailRepository } from '@/data/protocols/load-account-by-email-repository';
 import { AccountModel, AuthProps } from '@/domain';
 import { faker } from '@faker-js/faker';
 
 import { DbAuthentication } from './db-authentication';
-
-export interface HashCompare {
-  compare: (textPlain: string, hash: string) => void;
-}
 
 type SutTypes = {
   sut: DbAuthentication;
@@ -77,7 +74,7 @@ describe('DbAuthentication', () => {
     expect(loadByEmailSpy).toHaveBeenCalledWith(authPropsFake.email);
   });
 
-  it('Should findByEmail function return null if account not found', async () => {
+  it('Should return null if findByEmail function does not find the account with the email provided', async () => {
     const { sut } = makeSut();
 
     const authResult = await sut.auth(makeAuthPropsFake());
@@ -110,7 +107,7 @@ describe('DbAuthentication', () => {
 /*
   [x] Buscar o usuário utilizando email
   [x] se usuário nao for encontrado, retornar null,
-  [] Comparar password
+  [x] Comparar password
   [] retornar null se a senha retornado no usuário da consulta é diferente da senha recebida como parâmetro
   [ ] if as senhas forem diferente, retornar null
   [ ] Criar o token com o email do usuário e as permissões
