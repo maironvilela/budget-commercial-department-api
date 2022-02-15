@@ -6,8 +6,8 @@
     "username": "postgres",
     "password": "docker",
     "database": "budget",
-    "logger ": true,
-    "entities": [
+    "logger": true,
+     "entities": [
       "./src/infra/db/typeorm/entities/**/*.ts"
     ],
     "migrations": [
