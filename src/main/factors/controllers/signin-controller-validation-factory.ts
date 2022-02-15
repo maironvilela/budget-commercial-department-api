@@ -8,14 +8,13 @@ import { makeEmailValidatorValidation } from '../validations/email-validator-val
 
 export const makeSignInControllerValidationFactory =
   (): ValidationComposite => {
-    let validations: Validation[];
+    const validations: Validation[] = [];
 
-    const fields = ['email, password'];
+    const fields = ['email', 'password'];
 
     for (const field of fields) {
       validations.push(new RequiredFieldsValidations(field));
     }
-
     validations.push(makeEmailValidatorValidation('email'));
 
     return new ValidationComposite(validations);
