@@ -38,9 +38,9 @@ const makeSut = (): SutTypes => {
 
 const makeCreateAuth = (): CreateAuth => {
   class CreateAuthStub implements CreateAuth {
-    async create(data: CreateAuthProps): Promise<CreateAuthResult> {
+    create(data: CreateAuthProps): CreateAuthResult {
       const authResult = authResultFake;
-      return await new Promise(resolve => resolve(authResult));
+      return authResult;
     }
   }
   return new CreateAuthStub();

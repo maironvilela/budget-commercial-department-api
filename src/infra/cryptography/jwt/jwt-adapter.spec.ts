@@ -1,44 +1,34 @@
 import { faker } from '@faker-js/faker';
-import jwt from 'jsonwebtoken';
 
-import auth from '@/config/auth';
-import { CreateAuthResult } from '@/data';
 import { JWTAdapter } from '@/infra';
 
 jest.mock('jsonwebtoken', () => ({
-  async sign(): Promise<CreateAuthResult> {
-    return await new Promise(resolve =>
-      resolve({ token: 'any_token', refreshToken: 'any_refresh_token' }),
-    );
+  sign(): string {
+    return 'any_token';
   },
 }));
 
-const makeSut = (): JWTAdapter => {
-  return new JWTAdapter();
+type SutTypes = {
+  sut: JWTAdapter;
+};
+const makeSut = (): SutTypes => {
+  const sut = new JWTAdapter();
+
+  return { sut };
 };
 describe('JWTAdapter', () => {
-  it('Should return token and refreshToken', async () => {
-    const { sign } = jwt;
+  describe('create', () => {
+    it('Should return token and refreshToken', () => {
+      const { sut } = makeSut();
 
-    const { jwtSecret, expiresInToken, expiresInRefreshToken } = auth;
+      const id = faker.datatype.uuid();
+      const email = faker.internet.email();
+      const roles = [faker.name.jobType()];
 
-    const id = faker.datatype.uuid();
-    const email = faker.internet.email();
-    const roles = [faker.name.jobType()];
+      const authResult = sut.create({ id, email, roles });
 
-    const authResult = await makeSut().create({ id, email, roles });
-
-    const token = sign({ roles }, jwtSecret, {
-      subject: email,
-      expiresIn: expiresInToken,
+      expect(authResult.token).toEqual('any_token');
+      expect(authResult.refreshToken).toEqual('any_token');
     });
-
-    const refreshToken = sign({}, jwtSecret, {
-      subject: id,
-      expiresIn: expiresInRefreshToken,
-    });
-
-    expect(authResult.token).toEqual(token);
-    expect(authResult.refreshToken).toEqual(refreshToken);
   });
 });
