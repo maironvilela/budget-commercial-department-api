@@ -5,9 +5,11 @@ export default async (): Promise<Connection> => {
 
   return await createConnection(
     Object.assign(defaultOptions, {
-      host: process.env.DOCKER_SERVICE_POSTGRES,
+      host: process.env.DOCKER_SERVICE_POSTGRES || 'localhost',
       database:
-        process.env.NODE_ENV === 'test' ? 'budget' : defaultOptions.database,
+        process.env.NODE_ENV === 'test'
+          ? 'budget-test'
+          : defaultOptions.database,
     }),
   );
 };

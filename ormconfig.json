@@ -8,7 +8,7 @@
     "database": "budget",
     "logger ": true,
     "entities": [
-      "./src/modules/**/infra/typeorm/entities/*.ts"
+      "./src/infra/db/typeorm/entities/**/*.ts"
     ],
     "migrations": [
       "./src/infra/db/typeorm/migrations/*.ts"
