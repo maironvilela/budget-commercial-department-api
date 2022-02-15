@@ -1,4 +1,5 @@
 import { faker } from '@faker-js/faker';
+import jwt from 'jsonwebtoken';
 
 import { JWTAdapter } from '@/infra';
 
@@ -18,17 +19,32 @@ const makeSut = (): SutTypes => {
 };
 describe('JWTAdapter', () => {
   describe('create', () => {
-    it('Should return token and refreshToken', () => {
+    it('Should return token and refreshToken', async () => {
       const { sut } = makeSut();
 
       const id = faker.datatype.uuid();
       const email = faker.internet.email();
       const roles = [faker.name.jobType()];
 
-      const authResult = sut.create({ id, email, roles });
+      const authResult = await sut.create({ id, email, roles });
+      expect(authResult).toEqual({
+        token: 'any_token',
+        refreshToken: 'any_token',
+      });
+    });
+    it('Should throw if sign function fail', async () => {
+      const { sut } = makeSut();
 
-      expect(authResult.token).toEqual('any_token');
-      expect(authResult.refreshToken).toEqual('any_token');
+      const id = faker.datatype.uuid();
+      const email = faker.internet.email();
+      const roles = [faker.name.jobType()];
+
+      jest.spyOn(jwt, 'sign').mockImplementationOnce(() => {
+        throw new Error();
+      });
+
+      const result = sut.create({ id, email, roles });
+      await expect(result).rejects.toThrow();
     });
   });
 });

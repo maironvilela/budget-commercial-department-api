@@ -4,7 +4,11 @@ import auth from '@/config/auth';
 import { CreateAuth, CreateAuthProps, CreateAuthResult } from '@/data';
 
 export class JWTAdapter implements CreateAuth {
-  create({ id, email, roles }: CreateAuthProps): CreateAuthResult {
+  async create({
+    id,
+    email,
+    roles,
+  }: CreateAuthProps): Promise<CreateAuthResult> {
     const { expiresInRefreshToken, jwtSecret } = auth;
 
     const refreshToken = jwt.sign({}, jwtSecret, {
@@ -17,6 +21,6 @@ export class JWTAdapter implements CreateAuth {
       expiresIn: expiresInRefreshToken,
     });
 
-    return { token, refreshToken };
+    return await new Promise(resolve => resolve({ token, refreshToken }));
   }
 }

@@ -6,10 +6,9 @@ import {
   CreateAuthResult,
   CreateAuthProps,
   LoadAccountByEmailRepository,
+  DbAuthentication,
 } from '@/data';
 import { AccountModel, AuthProps } from '@/domain';
-
-import { DbAuthentication } from './db-authentication';
 
 type SutTypes = {
   sut: DbAuthentication;
@@ -38,9 +37,9 @@ const makeSut = (): SutTypes => {
 
 const makeCreateAuth = (): CreateAuth => {
   class CreateAuthStub implements CreateAuth {
-    create(data: CreateAuthProps): CreateAuthResult {
+    async create(data: CreateAuthProps): Promise<CreateAuthResult> {
       const authResult = authResultFake;
-      return authResult;
+      return await new Promise(resolve => resolve(authResult));
     }
   }
   return new CreateAuthStub();

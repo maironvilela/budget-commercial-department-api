@@ -9,5 +9,5 @@ export type CreateAuthResult = {
   refreshToken: string;
 };
 export interface CreateAuth {
-  create: (data: CreateAuthProps) => CreateAuthResult;
+  create: (data: CreateAuthProps) => Promise<CreateAuthResult>;
 }
