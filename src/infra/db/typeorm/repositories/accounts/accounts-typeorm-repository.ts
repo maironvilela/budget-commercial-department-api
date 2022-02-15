@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/prefer-readonly */
 import { getRepository, Repository } from 'typeorm';
 
 import { LoadAccountByEmailRepository } from '@/data';
@@ -6,7 +7,8 @@ import { AccountModel } from '@/domain';
 import { Account } from '../../entities/account';
 
 export class AccountTypeormRepository implements LoadAccountByEmailRepository {
-  private readonly repository: Repository<Account>;
+  private repository: Repository<Account>;
+
   constructor() {
     this.repository = getRepository(Account);
   }
@@ -17,6 +19,12 @@ export class AccountTypeormRepository implements LoadAccountByEmailRepository {
         email,
       },
     });
-    return account.getAccountModel();
+
+    if (account) {
+      const accountModel = account.getAccountModel();
+      return accountModel;
+    }
+
+    return null;
   }
 }

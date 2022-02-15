@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { Connection } from 'typeorm';
 
-import createConnection from '@/infra/db/typeorm';
+import { TypeormHelper } from '@/infra/db/typeorm/helpers/typeorm-helpers';
 
 import { AccountTypeormRepository } from './accounts-typeorm-repository';
 
@@ -26,7 +26,7 @@ const roleFaker2 = {
 };
 
 beforeAll(async () => {
-  connection = await createConnection();
+  connection = await TypeormHelper.getConnection();
   await connection.runMigrations();
 
   const queryAccount = `INSERT INTO accounts(id, name, email, password, refresh_token, created_at)
