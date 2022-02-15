@@ -21,7 +21,7 @@ export class DbAuthentication implements Authentication {
         const auth = await this.createAuth.create({
           id: account.id,
           email: account.email,
-          roles: [account.roles],
+          roles: account.roles,
         });
         return Object.assign(auth, { name: account.name });
       }

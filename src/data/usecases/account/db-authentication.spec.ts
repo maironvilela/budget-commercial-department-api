@@ -79,7 +79,7 @@ const makeAccountModelResultFaker = (): AccountModel => ({
   name: faker.name.findName(),
   email: faker.internet.email(),
   password: faker.internet.password(),
-  roles: faker.name.jobType(),
+  roles: [faker.name.jobType()],
   refreshToken: faker.datatype.uuid(),
 });
 const makeCreateAuthResultFake = (): CreateAuthResult => ({
@@ -179,7 +179,7 @@ describe('DbAuthentication', () => {
     expect(createSpy).toHaveBeenCalledWith({
       id: accountModelFake.id,
       email: accountModelFake.email,
-      roles: [accountModelFake.roles],
+      roles: accountModelFake.roles,
     });
   });
   it('Should throw if createAuth fail', async () => {
