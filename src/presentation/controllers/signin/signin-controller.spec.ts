@@ -11,6 +11,7 @@ import {
   serverError,
   ServerError,
   ok,
+  unauthorized,
 } from '@/presentation';
 
 interface sutTypes {
@@ -155,5 +156,15 @@ describe('SignInController', () => {
 
     expect(response.statusCode).toEqual(500);
     expect(response).toEqual(serverError(new ServerError('any_stack')));
+  });
+
+  it('Should return badRequest with Unauthorized if account not found with email provided', async () => {
+    const { authenticationStub, sut } = makeSut();
+
+    jest.spyOn(authenticationStub, 'auth').mockReturnValueOnce(null);
+
+    const response = await sut.handle(makeHttpRequestFake());
+
+    expect(response).toEqual(unauthorized());
   });
 });

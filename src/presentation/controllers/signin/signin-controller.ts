@@ -7,6 +7,7 @@ import {
   Validation,
   serverError,
   ok,
+  unauthorized,
 } from '@/presentation';
 
 export class SignInController implements Controller {
@@ -24,6 +25,11 @@ export class SignInController implements Controller {
         return badRequest(error);
       }
       const auth = await this.authentication.auth({ email, password });
+
+      if (!auth) {
+        return unauthorized();
+      }
+
       return ok(auth);
     } catch (error) {
       return serverError(error);
