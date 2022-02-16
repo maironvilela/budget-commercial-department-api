@@ -157,8 +157,7 @@ describe('SignInController', () => {
     expect(response.statusCode).toEqual(500);
     expect(response).toEqual(serverError(new ServerError('any_stack')));
   });
-
-  it('Should return badRequest with Unauthorized if account not found with email provided', async () => {
+  it('Should SigninController return Unauthorized if email or password incorrect', async () => {
     const { authenticationStub, sut } = makeSut();
 
     jest.spyOn(authenticationStub, 'auth').mockReturnValueOnce(null);
